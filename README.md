@@ -8,7 +8,7 @@ An easy to use, secure, and opinionated encryption wrapper library for Ruby.
 
 **Bro, there's like a bazillion crypto libraries out there already. Why another one?**
 
-Most crypto libraries require the user to make significant usage decisions. Without understanding the concepts behind all the options, it is easy to the users to pick something inappropriate, resulting in insecure systems. Also, they often allow silly defaults, such as an IV set to all 0s or forgetting a salt etc. This library enforces best-practices, so if you need more control you should use a lower level library.
+Most crypto libraries require the user to make significant usage decisions. Without understanding the concepts behind all the options, it is easy for the users to pick something inappropriate, resulting in insecure systems. Also, libraries often allow silly defaults, such as an IV set to all 0s or forgetting a salt etc. This library enforces best-practices, so if you need more control you should use a lower level library.
 
 ## Features
 
@@ -56,7 +56,7 @@ You can basically encrypt something, and decrypt something. That's all.
 
 ## Output
 
-The output you get from the encrypt function is a string made up of Base64 encoded components, joined together with an ASCII period (0x2e):
+The output you get from the encrypt function is basically just a string made up of Base64 encoded components, joined together with an ASCII period (0x2e):
 
 Example output:
 
@@ -77,7 +77,7 @@ The design principals of this library are:
 * To use existing cryptographic algorithms and primitives
 * To make encryption accessible, but strong
 * To keep things simple by minimising configuration options
-* That the user of the library doesn't really care what the encrypted text looks like, just that they can decrypt it
+* That the user of the library doesn't really care what the encrypted data looks like, just that they can decrypt it
 
 ### Encryption process
 
@@ -97,7 +97,7 @@ The design principals of this library are:
   * version string
   * base64 encoded IV from step 5
   * base64 encoded salt from step 3
-  * baes65 encoded ciphertext from step 5
+  * baes64 encoded ciphertext from step 5
 7. An HMAC is generated for the cipher message. The properties are:
   * uses SHA256
   * key is second key from step 4
