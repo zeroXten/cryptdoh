@@ -2,7 +2,13 @@
 
 ### *Bro, do you even Encrypt-then-MAC?*
 
-An easy to use, secure, and opinionated encryption wrapper library.
+An easy to use, secure, and opinionated encryption wrapper library for Ruby.
+
+## Motivation
+
+**Bro, there's like a bazillion crypto libraries out there already. Why another one?**
+
+Most crypto libraries require the user to make significant usage decisions. Without understanding the concepts behind all the options, it is easy to the users to pick something in appropriate, resulting in 
 
 ## Features
 
