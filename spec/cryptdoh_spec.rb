@@ -44,6 +44,14 @@ describe Cryptdoh do
     expect(Base64.decode64(encoded_ciphertext)).not_to eq(message)
   end
 
+  it 'can skip strength checks' do
+    message = 'my secret message'
+    password = 'password'
+
+    ciphertext = Cryptdoh.encrypt(password, message, skip_strength_check: true)
+    expect(ciphertext).to be_kind_of(String)
+  end
+
   it 'decrypts' do
     message = 'my secret message'
     password = 'dZ]av}a]i4qK2:1Z:t |Ju.'

@@ -17,8 +17,8 @@ module Cryptdoh
   KEY_LENGTH = 32
   DIGEST = OpenSSL::Digest::SHA256.new
 
-  def self.encrypt(password, message)
-    _check_strength(password)
+  def self.encrypt(password, message, args = {})
+    _check_strength(password) unless args[:skip_strength_check]
 
     (salt, key) = _kdf(password)
     cipher_key = key[0..KEY_LENGTH-1]
@@ -30,33 +30,29 @@ module Cryptdoh
     cipher.key = cipher_key
 
     ciphertext = cipher.update(message) + cipher.final
-    encoded_ciphertext = Base64.encode64(ciphertext).chomp
-    encoded_iv = Base64.encode64(iv).chomp
-    encoded_salt = Base64.encode64(salt).chomp
 
-    cipher_message = [encoded_iv, encoded_salt, encoded_ciphertext].join('.')
-    
+    cipher_message = [_encode(iv), _encode(salt), _encode(ciphertext)].join('.')
     hmac = _hmac(hmac_key, cipher_message)
-    encoded_hmac = Base64.encode64(hmac).chomp
-    [cipher_message, encoded_hmac].join('.')
+
+    [cipher_message, _encode(hmac)].join('.')
   end
 
   def self.decrypt(password, message)
     (encoded_iv, encoded_salt, encoded_ciphertext, encoded_hmac) = message.split('.')
 
-    (salt, key) = _kdf(password, Base64.decode64(encoded_salt))
+    (salt, key) = _kdf(password, _decode(encoded_salt))
     cipher_key = key[0..KEY_LENGTH-1]
     hmac_key = key[KEY_LENGTH..-1]
 
     hmac = _hmac(hmac_key, [encoded_iv, encoded_salt, encoded_ciphertext].join('.'))
-    raise EvilError, 'Invalid HMAC' unless Base64.decode64(encoded_hmac) == hmac
+    raise EvilError, 'Invalid HMAC' unless _decode(encoded_hmac) == hmac
 
     decipher = OpenSSL::Cipher::AES.new(KEY_LENGTH * 8, :CTR)
     decipher.decrypt
-    decipher.iv = Base64.decode64(encoded_iv)
+    decipher.iv = _decode(encoded_iv)
     decipher.key = cipher_key
 
-    decipher.update(Base64.decode64(encoded_ciphertext)) + decipher.final
+    decipher.update(_decode(encoded_ciphertext)) + decipher.final
   end
 
   def self._check_strength(password)
@@ -73,5 +69,13 @@ module Cryptdoh
 
   def self._hmac(key, message)
     OpenSSL::HMAC.digest(DIGEST, key, message)
+  end
+
+  def self._encode(data)
+    Base64.encode64(data).chomp
+  end
+
+  def self._decode(data)
+    Base64.decode64(data)
   end
 end
