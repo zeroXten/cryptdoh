@@ -1,6 +1,6 @@
 # Cryptdoh
 
-## *Bro, do you even Encrypt-then-MAC?*
+### *Bro, do you even Encrypt-then-MAC?*
 
 An easy to use, secure, and opinionated encryption wrapper library.
 
