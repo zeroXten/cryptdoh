@@ -85,7 +85,7 @@ The design principals of this library are:
 2. The password strength is checked using cracklib. If it is weak an exception is raised
 3. PKCS5 PBKDF2 with HMAC is used to generate a key. The properties are:
   * 16 byte random salt
-  * 2000 iterations
+  * 100,000 iterations
   * Uses SHA256
   * Returns a 512 bit key and the salt
 4. The key is split into two 256 bit keys. The first one is used for encryption, the second for the HMAC.
@@ -115,7 +115,7 @@ The design principals of this library are:
   * base64 encoded HMAC
 3. PKCS5 PBKDF2 with HMAC is used to generate the key using the password and the base64 decoded salt from step 2. The properties are:
   * 16 byte provided salt
-  * 2000 iterations
+  * 100,000 iterations
   * Uses SHA256
   * Returns a 512 bit key and the salt
 4. The key is split into two 256 bit keys. The first one is used for decryption, the second for the HMAC.

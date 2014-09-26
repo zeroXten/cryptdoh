@@ -13,7 +13,7 @@ module Cryptdoh
 
   IV_LENGTH = 16
   SALT_LENGTH = 16
-  ITERATIONS = 2000
+  ITERATIONS = 100 * 1000
   KEY_LENGTH = 32
   DIGEST = OpenSSL::Digest::SHA256.new
 
