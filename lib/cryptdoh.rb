@@ -16,6 +16,7 @@ module Cryptdoh
   ITERATIONS = 100 * 1000
   KEY_LENGTH = 32
   DIGEST = OpenSSL::Digest::SHA256.new
+  VERSION = "1"
 
   def self.encrypt(password, message, args = {})
     _check_strength(password) unless args[:skip_strength_check]
@@ -24,30 +25,30 @@ module Cryptdoh
     cipher_key = key[0..KEY_LENGTH-1]
     hmac_key = key[KEY_LENGTH..-1]
 
-    cipher = OpenSSL::Cipher::AES.new(KEY_LENGTH * 8, :CTR)
+    cipher = OpenSSL::Cipher::AES.new(KEY_LENGTH * 8, :CBC)
     cipher.encrypt
     iv = cipher.random_iv
     cipher.key = cipher_key
 
     ciphertext = cipher.update(message) + cipher.final
 
-    cipher_message = [_encode(iv), _encode(salt), _encode(ciphertext)].join('.')
+    cipher_message = [VERSION, _encode(iv), _encode(salt), _encode(ciphertext)].join('.')
     hmac = _hmac(hmac_key, cipher_message)
 
     [cipher_message, _encode(hmac)].join('.')
   end
 
   def self.decrypt(password, message)
-    (encoded_iv, encoded_salt, encoded_ciphertext, encoded_hmac) = message.split('.')
+    (version, encoded_iv, encoded_salt, encoded_ciphertext, encoded_hmac) = message.split('.')
 
     (salt, key) = _kdf(password, _decode(encoded_salt))
     cipher_key = key[0..KEY_LENGTH-1]
     hmac_key = key[KEY_LENGTH..-1]
 
-    hmac = _hmac(hmac_key, [encoded_iv, encoded_salt, encoded_ciphertext].join('.'))
+    hmac = _hmac(hmac_key, [version, encoded_iv, encoded_salt, encoded_ciphertext].join('.'))
     raise EvilError, 'Invalid HMAC' unless _decode(encoded_hmac) == hmac
 
-    decipher = OpenSSL::Cipher::AES.new(KEY_LENGTH * 8, :CTR)
+    decipher = OpenSSL::Cipher::AES.new(KEY_LENGTH * 8, :CBC)
     decipher.decrypt
     decipher.iv = _decode(encoded_iv)
     decipher.key = cipher_key
@@ -77,5 +78,7 @@ module Cryptdoh
 
   def self._decode(data)
     Base64.decode64(data)
+  rescue
+    raise EvilError, 'Bad base64 data'
   end
 end

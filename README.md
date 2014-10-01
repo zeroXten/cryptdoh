@@ -90,7 +90,7 @@ The design principals of this library are:
   * Returns a 512 bit key and the salt
 4. The key is split into two 256 bit keys. The first one is used for encryption, the second for the HMAC.
 5. AES is used to encrypt the supplied message. The properties are:
-  * 256 bit AES in CTR mode
+  * 256 bit AES in CBC mode
   * 16 byte random IV
   * key is first key from step 4
 6. The following components are joined to with an ASCII period to give us the cipher message:
@@ -124,7 +124,7 @@ The design principals of this library are:
   * key is second key from step 4
 6. The encoded HMAC from step 2 is base64 decoded and compared with the HMAC from step 5. If they don't match an exception is raised.
 7. AES is used to decrypt the ciphertext giving us the plaintext. The properties are:
-  * 256 bit AES in CTR mode
+  * 256 bit AES in CBC mode
   * base64 decoded IV from step 2
   * key is first key from step 4
 8. The plaintext is returned.

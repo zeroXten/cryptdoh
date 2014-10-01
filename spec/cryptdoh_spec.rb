@@ -37,8 +37,9 @@ describe Cryptdoh do
     password = 'dZ]av}a]i4qK2:1Z:t |Ju.'
 
     ciphertext = Cryptdoh.encrypt(password, message)
-    (encoded_iv, encoded_salt, encoded_ciphertext) = ciphertext.split('.')
+    (version, encoded_iv, encoded_salt, encoded_ciphertext) = ciphertext.split('.')
 
+    expect(version).to eq(Cryptdoh::VERSION)
     expect(Base64.decode64(encoded_iv).size).to eq(Cryptdoh::IV_LENGTH)
     expect(Base64.decode64(encoded_salt).size).to eq(Cryptdoh::SALT_LENGTH)
     expect(Base64.decode64(encoded_ciphertext)).not_to eq(message)
@@ -61,6 +62,18 @@ describe Cryptdoh do
     expect(plaintext).to eq(message)
   end
 
+  it 'handles random ascii ciphertext' do
+    password = 'dZ]av}a]i4qK2:1Z:t |Ju.'
+    ciphertext = '1111jhkjhfskjdfhsdkjfdcxnvxbcmvnbxcvkjshf3287e234wesdfsdkjf'
+    expect { Cryptdoh.decrypt(password, ciphertext) }.to raise_error(EvilError, 'Bad base64 data')
+  end
+
+  it 'handles bad base64 encoded ciphertext' do
+    password = 'dZ]av}a]i4qK2:1Z:t |Ju.'
+    ciphertext = '1.28lfIFmMSprD1OSHrBN8Iw==.wvnYqLDV31mosVZv/aKiTg==.GJXgpa2Xi8YHyxObIttO460=.uAd0Xycmv9z+4INQruioqUOJw6UtgBzs1IcDA7K5nIs='
+    expect { Cryptdoh.decrypt(password, ciphertext) }.to raise_error(EvilError, 'Invalid HMAC')
+  end
+
   it 'fails for wrong password' do
     message = 'my secret message'
     password = 'dZ]av}a]i4qK2:1Z:t |Ju.'
@@ -76,10 +89,10 @@ describe Cryptdoh do
 
     ciphertext = Cryptdoh.encrypt(password, message)
     sections = ciphertext.split('.')
-    %w[ iv salt ciphertext hmac].each_with_index do |name, i|
+    %w[ version iv salt ciphertext hmac].each_with_index do |name, i|
       old_target = sections[i].clone
       target = sections[i].clone
-      target[2] = target[2] == 'X' ? 'Y' : 'X'
+      target[0] = target[0] == 'X' ? 'Y' : 'X'
 
       sections[i] = target
       ciphertext = sections.join('.')
