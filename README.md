@@ -38,7 +38,7 @@ For Debian based systems run:
 
 RedHat systems should run:
 
-    $ sudo yum ...
+    $ sudo yum install cracklib-devel
 
 OSX users can use homebrew:
 
