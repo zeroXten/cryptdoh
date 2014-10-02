@@ -13,8 +13,12 @@ Most crypto libraries require the user to make significant usage decisions. With
 ## Features
 
 * Checks password strength and rejects weak passwords
-* 256 bit encryption
-* Preserves integrity using HMAC
+* 128 bit security level (through 256 bit AES and SHA-256)
+* Ensures integrity using HMAC
+
+## WARNING
+
+This library is currently an alpha and is subject to change. 
 
 ## Installation
 
@@ -30,7 +34,7 @@ You must also have cracklib installed along with its dictionary.
 
 For Debian based systems run:
 
-    $ sudo apt-get ...
+    $ sudo apt-get install cracklib-runtime libcrack2 libcrack2-dev wamerican
 
 RedHat systems should run:
 
@@ -72,7 +76,7 @@ It will raise a **EvilError** for any problems with malformed data.
 
 ## Design
 
-The design principals of this library are:
+The design principles of this library are:
 
 * To use existing cryptographic algorithms and primitives
 * To make encryption accessible, but strong
@@ -128,3 +132,9 @@ The design principals of this library are:
   * base64 decoded IV from step 2
   * key is first key from step 4
 8. The plaintext is returned.
+
+### Usage of AES
+
+When this library was first written it used 256 bit AES in CTR mode. However, this has now been changed to CBC because only Ruby 2.1 openssl has support for CTR. Using CBC allows this library to work with other versions of Ruby. Now, have we reduced the security in order to increase usability of the library? Well, no. CBC with a random IV is a secure mode of AES, but there are some advantages of CTR over CBC, one is that you can encrypt a larger number of blocks under a single key. CTR should allow you to encrypt about 16k petabytes under a single key and CBC about 64 gigabytes before you risk leaking information. 64 GB should be sufficient for this library, especially given that every call to encrypt generates a new key. This may change in future.
+
+CTR 16k PB vs CBC 64 GB

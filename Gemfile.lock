@@ -3,6 +3,12 @@ GEM
   specs:
     diff-lcs (1.2.5)
     ffi (0.6.4)
+    kitchen-vagrant (0.15.0)
+      test-kitchen (~> 1.0)
+    mixlib-shellout (1.4.0)
+    net-scp (1.2.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.9.1)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
       rspec-expectations (~> 3.1.0)
@@ -17,10 +23,22 @@ GEM
     rspec-support (3.1.0)
     ruby-cracklib (0.1.0)
       ffi (~> 0.6.3)
+    safe_yaml (1.0.4)
+    test-kitchen (1.2.1)
+      mixlib-shellout (~> 1.2)
+      net-scp (~> 1.1)
+      net-ssh (~> 2.7)
+      safe_yaml (~> 1.0)
+      thor (~> 0.18)
+    thor (0.19.1)
+    vagrant-wrapper (1.2.1.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  kitchen-vagrant
   rspec
   ruby-cracklib
+  test-kitchen
+  vagrant-wrapper

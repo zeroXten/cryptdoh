@@ -69,7 +69,8 @@ module Cryptdoh
   end
 
   def self._hmac(key, message)
-    OpenSSL::HMAC.digest(DIGEST, key, message)
+    # Only require 128 bits of security, so cut in half
+    OpenSSL::HMAC.digest(DIGEST, key, message)[0..15]
   end
 
   def self._encode(data)
@@ -80,5 +81,14 @@ module Cryptdoh
     Base64.decode64(data)
   rescue
     raise EvilError, 'Bad base64 data'
+  end
+
+  def self._verify
+    message = 'this is a secret message'
+    password = 'dZ]av}a]i4qK2:1Z:t |Ju.'
+
+    decrypt(password, encrypt(password, message)) == message
+  rescue
+    false
   end
 end

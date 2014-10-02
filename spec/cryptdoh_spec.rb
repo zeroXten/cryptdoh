@@ -21,7 +21,7 @@ describe Cryptdoh do
     key = SecureRandom.random_bytes(Cryptdoh::KEY_LENGTH)
     message = 'message to protect'
     sig = Cryptdoh._hmac(key, message)
-    expect(sig.size).to eq(Cryptdoh::KEY_LENGTH)
+    expect(sig.size).to eq(Cryptdoh::KEY_LENGTH/2)
   end
 
   it 'checks crappy passwords' do
@@ -100,4 +100,15 @@ describe Cryptdoh do
       sections[i] = old_target
     end  
   end
+
+  it 'takes a secure 256 bit random binary key' do
+    message = 'my secret message'
+    key = '167db99a8c6a9e924518fd92faf7c1f68501b90df16e17aa2f395b98f9d4e498'
+    password = key.scan(/../).map { |v| [v].pack('H2') }.join
+
+    ciphertext = Cryptdoh.encrypt(password, message)
+    plaintext = Cryptdoh.decrypt(password, ciphertext)
+    expect(plaintext).to eq(message)
+  end
+
 end
