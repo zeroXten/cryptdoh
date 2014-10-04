@@ -64,7 +64,7 @@ The output you get from the encrypt function is basically just a string made up 
 
 Example output:
 
-    1.YG/fxiIrSZkvttXluubYYQ==.uY3aJoPcS1B8ofNxxgpwcg==.Wv4mw8Znm0FJAwNTFZhZmRs=.xAVyf0rzeCqgtNuTDDBQ7xbmBafG+mGxyH7KhH/BIRo=
+    1.JrUyx6Vjty7aLtmCyxsZJg==.6ki5FsvuVfzWpEm4Q8yI8Q==.SwjSpH65XwfGtnJ1ryaC2u08sMVitpuUqxnPHGhIANI=.2Ys5wBf318L9mwaUUPUjUg==
 
 See the Design section below for details.
 

@@ -37,12 +37,13 @@ describe Cryptdoh do
     password = 'dZ]av}a]i4qK2:1Z:t |Ju.'
 
     ciphertext = Cryptdoh.encrypt(password, message)
-    (version, encoded_iv, encoded_salt, encoded_ciphertext) = ciphertext.split('.')
+    (version, encoded_iv, encoded_salt, encoded_ciphertext, encoded_hmac) = ciphertext.split('.')
 
     expect(version).to eq(Cryptdoh::VERSION)
     expect(Base64.decode64(encoded_iv).size).to eq(Cryptdoh::IV_LENGTH)
     expect(Base64.decode64(encoded_salt).size).to eq(Cryptdoh::SALT_LENGTH)
     expect(Base64.decode64(encoded_ciphertext)).not_to eq(message)
+    expect(Base64.decode64(encoded_hmac).size).to eq(Cryptdoh::KEY_LENGTH/2)
   end
 
   it 'can skip strength checks' do
