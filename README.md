@@ -137,8 +137,6 @@ The design principles of this library are:
 
 When this library was first written it used 256 bit AES in CTR mode. However, this has now been changed to CBC because only Ruby 2.1 openssl has support for CTR. Using CBC allows this library to work with other versions of Ruby. Now, have we reduced the security in order to increase usability of the library? Well, no. CBC with a random IV is a secure mode of AES, but there are some advantages of CTR over CBC, one is that you can encrypt a larger number of blocks under a single key. CTR should allow you to encrypt about 16k petabytes under a single key and CBC about 64 gigabytes before you risk leaking information. 64 GB should be sufficient for this library, especially given that every call to encrypt generates a new key. 
 
-CTR 16k PB vs CBC 64 GB
-
 ## Stats
 
 ### Input vs Output sizes
