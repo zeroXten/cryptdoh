@@ -105,6 +105,7 @@ The design principles of this library are:
 7. An HMAC is generated for the cipher message. The properties are:
   * uses SHA256
   * key is second key from step 4
+  * first half of HMAC is used (16 bytes)
 8. The HMAC is base64 encoded and joined to the cipher message with an ASCII period. This gives us the final encrypted message.
 9. The encrypted message is returned.
 
@@ -126,6 +127,7 @@ The design principles of this library are:
 5. The HMAC is generated from all but the last components from step 2, joined together with an ASCII period. The properties are:
   * uses SHA256
   * key is second key from step 4
+  * first half of HMAC is used (16 bytes)
 6. The encoded HMAC from step 2 is base64 decoded and compared with the HMAC from step 5. If they don't match an exception is raised.
 7. AES is used to decrypt the ciphertext giving us the plaintext. The properties are:
   * 256 bit AES in CBC mode
