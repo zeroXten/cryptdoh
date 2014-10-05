@@ -24,12 +24,16 @@ describe Cryptdoh do
     expect(sig.size).to eq(Cryptdoh::KEY_LENGTH/2)
   end
 
+  it 'fails short passwords' do
+    expect{Cryptdoh._check_password_length('word')}.to raise_error(UserError)
+  end
+
   it 'checks crappy passwords' do
-    expect{Cryptdoh._check_strength('password')}.to raise_error(UserError)
+    expect{Cryptdoh._check_password_strength('password')}.to raise_error(UserError)
   end
 
   it 'checks good passwords' do
-    expect(Cryptdoh._check_strength('dZ]av}a]i4qK2:1Z:t |Ju.')).to be_nil
+    expect(Cryptdoh._check_password_strength('dZ]av}a]i4qK2:1Z:t |Ju.')).to be_nil
   end
 
   it 'encrypts' do

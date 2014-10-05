@@ -14,7 +14,7 @@ Most crypto libraries require the user to make significant usage decisions. With
 
 * Checks password strength and rejects weak passwords
 * 128 bit security level (through 256 bit AES and SHA-256)
-* Ensures integrity using HMAC
+* Ensures integrity using HMACs
 
 ## WARNING
 
@@ -58,6 +58,10 @@ You can basically encrypt something, and decrypt something. That's all.
 
     message == plaintext #=> true
 
+The password must be at least **8 bytes** long.
+
+This library has been written to be simple and secure, at the cost of efficiency. If you're building a network protocol that needs to be fast, you probably don't want to use this. If storage space is an issue, you probably don't want to use this. However, if you just want to encrypt and decrypt something securely, without having to worry about implementation, you've come to the right place.
+
 ## Output
 
 The output you get from the encrypt function is basically just a string made up of Base64 encoded components, joined together with an ASCII period (0x2e):
@@ -82,6 +86,15 @@ The design principles of this library are:
 * To make encryption accessible, but strong
 * To keep things simple by minimising configuration options
 * That the user of the library doesn't really care what the encrypted data looks like, just that they can decrypt it
+* Simplicity and Security trumps Efficiency. E.g. we use a simple separator rather than fixed or variable field lengths
+
+### Passwords vs keys
+
+Most encryption libraries expect the user to provide a securely generated key. The security of the entire system can fall apart of the user of the library doesn't use a decent key, or reuses a key inappropriately. This library is different as it treats the user provided key as a password and derives the encryption and HMAC keys from a KDF. To stop the user using something silly as a password (e.g. the word 'password') we check the input against cracklib. This should help filtering out poorly chosen passwords, but of course it isn't perfect. We also impose a minimum size of 8 bytes on passwords.
+
+### Speed
+
+This library isn't designed to be efficient. It uses base64 encoding numerous times per encryption rather than using field length or variable length fields. This is to keep things simple. However, the main slow down comes from the use of the KDF for generating the keys. Rather than expecting the user of the library to provide a strong and secure key, we take whatever we're given and force it through the KDF which uses 100k iterations to help protect against dictionary attacks.
 
 ### Encryption process
 
@@ -135,18 +148,21 @@ The design principles of this library are:
   * key is first key from step 4
 8. The plaintext is returned.
 
-### Usage of AES
+### Use of AES
 
 When this library was first written it used 256 bit AES in CTR mode. However, this has now been changed to CBC because only Ruby 2.1 openssl has support for CTR. Using CBC allows this library to work with other versions of Ruby. Now, have we reduced the security in order to increase usability of the library? Well, no. CBC with a random IV is a secure mode of AES, but there are some advantages of CTR over CBC, one is that you can encrypt a larger number of blocks under a single key. CTR should allow you to encrypt about 16k petabytes under a single key and CBC about 64 gigabytes before you risk leaking information. 64 GB should be sufficient for this library, especially given that every call to encrypt generates a new key. 
 
 ## Stats
 
-### Input vs Output sizes
 
-#### Output vs Input Size
+### Output vs Input Size
 
 ![output vs input size](https://raw.githubusercontent.com/zeroXten/cryptdoh/master/web/output_vs_input_size.png)
 
-#### Ratio of Output to Input size
+As you can see there is a simple linear relationship between the input size and the output size, as you would expect. The encoded IV and salt etc adds a fixed overhead. The steps come from alignments to the AES 128 bit (16 byte) block size.
+
+### Ratio of Output to Input size
 
 ![ratio of output to input size](https://raw.githubusercontent.com/zeroXten/cryptdoh/master/web/ratio_of_output_to_input_size.png)
+
+A 1 byte plaintext results in a 101 byte ciphertext. This means the ciphertext output is 101 times larger than the plaintext input, which is a huge inefficiency. However, you're probably not going to be encrypting such small amounts of data. As in input size grows, the ratio drops to a reasonable level of 2:1 at about 135 bytes. A 600 byte paragraph input would become about a 900 byte ciphertext. As the input gets larger, the fixed overhead becomes less significant, and the ratio approaches about 1.3 which comes from the Base64 encoding.

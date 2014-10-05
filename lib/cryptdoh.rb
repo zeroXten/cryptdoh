@@ -11,6 +11,7 @@ end
 
 module Cryptdoh
 
+  MIN_PASSWORD_LENGTH = 8
   IV_LENGTH = 16
   SALT_LENGTH = 16
   ITERATIONS = 100 * 1000
@@ -19,7 +20,8 @@ module Cryptdoh
   VERSION = "1"
 
   def self.encrypt(password, message, args = {})
-    _check_strength(password) unless args[:skip_strength_check]
+    _check_password_length(password)
+    _check_password_strength(password) unless args[:skip_strength_check]
 
     (salt, key) = _kdf(password)
     cipher_key = key[0..KEY_LENGTH-1]
@@ -56,9 +58,13 @@ module Cryptdoh
     decipher.update(_decode(encoded_ciphertext)) + decipher.final
   end
 
-  def self._check_strength(password)
+  def self._check_password_strength(password)
     c = CrackLib::Fascist(password)
     raise UserError, "Crappy password: #{c.reason}" unless c.ok?
+  end
+
+  def self._check_password_length(password)
+    raise UserError, "Crappy password: too short. Must be at least 8 bytes" unless password.size >= MIN_PASSWORD_LENGTH
   end
 
   def self._kdf(password, salt = nil)
