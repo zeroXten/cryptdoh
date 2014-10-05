@@ -99,28 +99,29 @@ This library isn't designed to be efficient. It uses base64 encoding numerous ti
 ### Encryption process
 
 1. Encrypt function is given a password and a message to encrypt
-2. The password strength is checked using cracklib. If it is weak an exception is raised
-3. PKCS5 PBKDF2 with HMAC is used to generate a key. The properties are:
+2. The size of the password is checked to ensure it is 8 bytes or more
+3. The password strength is checked using cracklib. If it is weak an exception is raised
+4. PKCS5 PBKDF2 with HMAC is used to generate a key. The properties are:
   * 16 byte random salt
   * 100,000 iterations
   * Uses SHA256
   * Returns a 512 bit key and the salt
-4. The key is split into two 256 bit keys. The first one is used for encryption, the second for the HMAC.
-5. AES is used to encrypt the supplied message. The properties are:
+5. The key is split into two 256 bit keys. The first one is used for encryption, the second for the HMAC.
+6. AES is used to encrypt the supplied message. The properties are:
   * 256 bit AES in CBC mode
   * 16 byte random IV
-  * key is first key from step 4
-6. The following components are joined to with an ASCII period to give us the cipher message:
+  * key is first key from step 5
+7. The following components are joined to with an ASCII period to give us the cipher message:
   * version string
-  * base64 encoded IV from step 5
-  * base64 encoded salt from step 3
-  * baes64 encoded ciphertext from step 5
-7. An HMAC is generated for the cipher message. The properties are:
+  * base64 encoded IV from step 6
+  * base64 encoded salt from step 4
+  * baes64 encoded ciphertext from step 6
+8. An HMAC is generated for the cipher message. The properties are:
   * uses SHA256
-  * key is second key from step 4
+  * key is second key from step 5
   * first half of HMAC is used (16 bytes)
-8. The HMAC is base64 encoded and joined to the cipher message with an ASCII period. This gives us the final encrypted message.
-9. The encrypted message is returned.
+9. The HMAC is base64 encoded and joined to the cipher message with an ASCII period. This gives us the final encrypted message.
+10. The encrypted message is returned.
 
 ### Decryption process
 
