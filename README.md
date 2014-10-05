@@ -90,7 +90,7 @@ The design principles of this library are:
 
 ### Passwords vs keys
 
-Most encryption libraries expect the user to provide a securely generated key. The security of the entire system can fall apart of the user of the library doesn't use a decent key, or reuses a key inappropriately. This library is different as it treats the user provided key as a password and derives the encryption and HMAC keys from a KDF. To stop the user using something silly as a password (e.g. the word 'password') we check the input against cracklib. This should help filtering out poorly chosen passwords, but of course it isn't perfect. We also impose a minimum size of 8 bytes on passwords.
+Most encryption libraries expect the user to provide a securely generated key. The security of the entire system can fall apart if the user of the library doesn't use a decent key, or reuses a key inappropriately. This library is different as it treats the user provided key as a password and derives the encryption and HMAC keys from a KDF. To stop the user using something silly as a password (e.g. the word 'password') we check the input against cracklib. This should help filtering out poorly chosen passwords, but of course it isn't perfect. We also impose a minimum size of 8 bytes on passwords.
 
 ### Speed
 
