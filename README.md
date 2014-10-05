@@ -28,7 +28,7 @@ Install the gem in the usual way:
 
 or add this to your Gemfile:
 
-    gem "cryptdoh"
+    gem "cryptdoh", '~> 0.1'
 
 You must also have cracklib installed along with its dictionary.
 
