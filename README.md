@@ -96,6 +96,10 @@ Most encryption libraries expect the user to provide a securely generated key. T
 
 This library isn't designed to be efficient. It uses base64 encoding numerous times per encryption rather than using field length or variable length fields. This is to keep things simple. However, the main slow down comes from the use of the KDF for generating the keys. Rather than expecting the user of the library to provide a strong and secure key, we take whatever we're given and force it through the KDF which uses 100k iterations to help protect against dictionary attacks.
 
+### Wiping data
+
+One of the limitations of using a language like Ruby is that you cannot directly control the memory. This is normally an advantage as it lets the developer get on with writing the application, but in this case it means securely wiping data, such as keys, from memory is essentially impossible. In Ruby everything is an object, and the VM uses a garbage collector to clean up unused objects. If you have a variable that contains a secret string, the best you can do is set that variable to *nil* and wait for the garbage collector. Even then, the GC isn't going to securely wipe the old data, so it can stay in memory for quite some time. If you have stronger security requirements you should use a different language.
+
 ### Encryption process
 
 1. Encrypt function is given a password and a message to encrypt

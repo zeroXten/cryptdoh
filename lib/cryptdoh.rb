@@ -37,6 +37,9 @@ module Cryptdoh
     cipher_message = [VERSION, _encode(iv), _encode(salt), _encode(ciphertext)].join('.')
     hmac = _hmac(hmac_key, cipher_message)
 
+    # Cleanup as best we can
+    salt = key = cipher_key = hmac_key = cipher = iv = ciphertext = nil
+    
     [cipher_message, _encode(hmac)].join('.')
   end
 
@@ -55,12 +58,18 @@ module Cryptdoh
     decipher.iv = _decode(encoded_iv)
     decipher.key = cipher_key
 
-    decipher.update(_decode(encoded_ciphertext)) + decipher.final
+    plaintext = decipher.update(_decode(encoded_ciphertext)) + decipher.final
+
+    # Cleanup
+    salt = key = cipher_key = hmac_key = hmac = decipher = nil
+
+    plaintext
   end
 
   def self._check_password_strength(password)
     c = CrackLib::Fascist(password)
     raise UserError, "Crappy password: #{c.reason}" unless c.ok?
+    c = nil
   end
 
   def self._check_password_length(password)
